@@ -1,66 +1,35 @@
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Lebre implements Runnable{
 
-    private final int FIM_PROVA = 20;
-    private int quantidadePulos = 1;
-    private int distanciaPercorrida = 0;
-    private String nome;
-    private int salto;
-    private int posisao;
-    private boolean correndo = true;
+    private Thread thread;
+    public List<LebreDto> classificacao;
+    private static int posicao = 1;
 
-    public Lebre(String nome) {
-        this.nome = nome;
-        this.salto = 0;
-    }
-
-    public static int aleatorioNaFaixa(final int primeiro, final int ultimo) {
-        Random rnd = ThreadLocalRandom.current();
-        return rnd.nextInt(ultimo - primeiro + 1) + primeiro;
+    public Lebre(String nomeLebre, List<LebreDto> classificacao) {
+        thread = new Thread(this, nomeLebre);
+        thread.start();
+        this.classificacao = classificacao;
+        System.out.println(nomeLebre + " Preparado....");
     }
 
     @Override
     public void run() {
-        while (distanciaPercorrida < FIM_PROVA){
-            try {
-                Thread.sleep(100);
-                salto = aleatorioNaFaixa(1,3);
-                System.out.println(this.nome + " " + this.quantidadePulos + "º Pulo" + " saltou: " + salto + " metros");
-                distanciaPercorrida = distanciaPercorrida + salto;
-                quantidadePulos ++;
-            } catch (Exception e) {
-            }
+        int distanciaPercorrida = 0;
+        int pulos = 0;
+        int quantidadePulos = 1;
+        while(distanciaPercorrida < 20){
+            pulos = Pulo.aleatorio();
+            distanciaPercorrida += pulos;
+            System.out.println(this.getThread().getName() + " " + quantidadePulos + "º salto foi " + pulos + "m, com um total percorrido de " + distanciaPercorrida +"m");
+            quantidadePulos++;
         }
+        classificacao.add(new LebreDto(thread.getName(), posicao++, quantidadePulos));
     }
 
-    public void mostraQuantidadePulos(){
-        System.out.println(this.nome + " saltou: " + quantidadePulos);
+    public Thread getThread() {
+        return thread;
     }
 
-    public int getDistanciaPercorrida() {
-        return distanciaPercorrida;
-    }
-
-    public int getPosisao() {
-        return posisao;
-    }
-
-    public void setPosisao(int posisao) {
-        this.posisao = posisao;
-    }
-
-
-    public String getNome() {
-        return nome;
-    }
-
-    public boolean isCorrendo() {
-        return correndo;
-    }
-
-    public void setCorrendo(boolean correndo) {
-        this.correndo = correndo;
-    }
 }

@@ -5,64 +5,30 @@ public class Corrida {
 
     public static void main(String[] args) {
 
-
-        Lebre pernaLonga = new Lebre("Perna Longa");
-        Lebre sansao = new Lebre("Sansão");
-        Lebre coelhoPascoa = new Lebre("Coelho da Páscoa");
-        Lebre abel = new Lebre("Abel");
-        Lebre capitaoCenoura = new Lebre("Capitão Cenoura");
-
-        Thread tPernaLonga = new Thread(pernaLonga);
-        Thread tSansao = new Thread(sansao);
-        Thread tCoelhoDaPascoa = new Thread(coelhoPascoa);
-        Thread tAbel = new Thread(abel);
-        Thread tCapitaoCenoura = new Thread(capitaoCenoura);
+        List<LebreDto> classificacao = new ArrayList<>();
+        Lebre pernaLonga = new Lebre("Perna Longa", classificacao);
+        Lebre sansao = new Lebre("Sansão", classificacao);
+        Lebre coelhoPascoa = new Lebre("Coelho da Páscoa", classificacao);
+        Lebre abel = new Lebre("Abel", classificacao);
+        Lebre capitaoCenoura = new Lebre("Capitão Cenoura", classificacao);
 
         System.out.println("LARGADA.....");
 
-        tPernaLonga.start();
-        tCoelhoDaPascoa.start();
-        tSansao.start();
-        tAbel.start();
-        tCapitaoCenoura.start();
-
-        List<String> podio = new ArrayList<>();
-        while(abel.isCorrendo() ||
-              capitaoCenoura.isCorrendo() ||
-              pernaLonga.isCorrendo() ||
-              coelhoPascoa.isCorrendo() ||
-              sansao.isCorrendo()) {
-
-            if (!tAbel.isAlive() && abel.isCorrendo()) {
-                podio.add(abel.getNome());
-                abel.setCorrendo(false);
-
-            }
-            if (!tCapitaoCenoura.isAlive() && capitaoCenoura.isCorrendo()) {
-                podio.add(capitaoCenoura.getNome());
-                capitaoCenoura.setCorrendo(false);
-            }
-            if (!tPernaLonga.isAlive() && pernaLonga.isCorrendo()) {
-                podio.add(pernaLonga.getNome());
-                pernaLonga.setCorrendo(false);
-            }
-
-            if (!tCoelhoDaPascoa.isAlive() && coelhoPascoa.isCorrendo()) {
-                podio.add(coelhoPascoa.getNome());
-                coelhoPascoa.setCorrendo(false);
-            }
-
-            if (!tSansao.isAlive() && sansao.isCorrendo()) {
-                podio.add(sansao.getNome());
-                sansao.setCorrendo(false);
-            }
+        try {
+            pernaLonga.getThread().join();
+            sansao.getThread().join();
+            coelhoPascoa.getThread().join();
+            abel.getThread().join();
+            capitaoCenoura.getThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        System.out.println("\nPODIO");
-        podio.forEach(System.out::println);
+        System.out.println("\nFim da prova, classificados: ");
+        classificacao.forEach(Corrida::dados);
+    }
 
-
-
-    }//main
-
-}//class
+    private static void dados(LebreDto lebreDto) {
+        System.out.println(lebreDto.getPosicao() + "º " + lebreDto.getNomeLebre() + " total saltos de " + lebreDto.getTotalPulos());
+    }
+}
